@@ -11,17 +11,17 @@ import com.github.maxswellyoo.creditas.domain.strategy.PaymentCalculationStrateg
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class Loan {
-    private final BigDecimal principal;
+public final class Loan {
+    private final BigDecimal loanAmount;
     private final LocalDate birthDate;
     private final int months;
     private final BigDecimal monthlyInstallment;
     private final BigDecimal totalAmount;
     private final BigDecimal totalInterest;
 
-    public Loan(BigDecimal principal, LocalDate birthDate, int months,
+    public Loan(BigDecimal loanAmount, LocalDate birthDate, int months,
                  BigDecimal monthlyInstallment, BigDecimal totalAmount, BigDecimal totalInterest) {
-        this.principal = principal;
+        this.loanAmount = loanAmount;
         this.birthDate = birthDate;
         this.months = months;
         this.monthlyInstallment = monthlyInstallment;
@@ -29,43 +29,42 @@ public class Loan {
         this.totalInterest = totalInterest;
     }
 
-
     /**
      * Factory method que simula o empréstimo, utilizando regras de negócio do domínio.
      *
-     * @param principal       Valor do empréstimo.
+     * @param loanAmount       Valor do empréstimo.
      * @param birthDate       Data de nascimento do cliente.
      * @param months          Número total de pagamentos.
      * @param scenario        Cenário de taxa de juros (FIXED ou VARIABLE).
      * @param calculationType Tipo de cálculo (por exemplo, "FIXED" ou "DECREASING").
      * @return Instância de Loan com os resultados da simulação.
      */
-    public static Loan simulateLoan(BigDecimal principal,
+    public static Loan simulateLoan(BigDecimal loanAmount,
                                     LocalDate birthDate,
                                     int months,
                                     InterestRateScenario scenario,
                                     CalculationType calculationType) {
         // Obtém a taxa base com base na idade
-        BigDecimal baseRate = InterestRateRuleProvider.getInterestRate(birthDate);
+        BigDecimal baseAnnualRate = InterestRateRuleProvider.getInterestRate(birthDate);
 
         // Cria a regra de juros adequada utilizando a factory (FIXED ou VARIABLE)
-        InterestRateRule rule = InterestRateRuleFactory.getRule(baseRate, scenario);
+        InterestRateRule rule = InterestRateRuleFactory.getRule(baseAnnualRate, scenario);
 
         // Seleciona a estratégia de cálculo de pagamento utilizando a factory
         PaymentCalculationStrategy strategy = PaymentCalculationStrategyFactory.getStrategy(calculationType);
 
         // Calcula a parcela mensal
-        BigDecimal monthlyPayment = strategy.calculateMonthlyPayment(principal, rule, months);
+        BigDecimal monthlyPayment = strategy.calculateMonthlyPayment(loanAmount, rule, months);
 
         // Calcula o valor total a ser pago e os juros totais
         BigDecimal totalAmount = monthlyPayment.multiply(BigDecimal.valueOf(months));
-        BigDecimal totalInterest = totalAmount.subtract(principal);
+        BigDecimal totalInterest = totalAmount.subtract(loanAmount);
 
-        return new Loan(principal, birthDate, months, monthlyPayment, totalAmount, totalInterest);
+        return new Loan(loanAmount, birthDate, months, monthlyPayment, totalAmount, totalInterest);
     }
 
-    public BigDecimal getPrincipal() {
-        return principal;
+    public BigDecimal getLoanAmount() {
+        return loanAmount;
     }
 
     public LocalDate getBirthDate() {

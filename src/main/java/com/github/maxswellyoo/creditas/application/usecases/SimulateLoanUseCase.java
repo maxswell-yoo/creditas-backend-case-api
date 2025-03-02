@@ -15,9 +15,9 @@ public class SimulateLoanUseCase {
         this.loanGateway = loanGateway;
     }
 
-    public Loan simulateFixedLoan(BigDecimal principal, LocalDate birthDate, int months) {
+    public Loan simulateLoan(BigDecimal loanAmount, LocalDate birthDate, int months) {
         Loan simulatedLoan = Loan.simulateLoan(
-                principal,
+                loanAmount,
                 birthDate,
                 months,
                 InterestRateScenario.FIXED,
