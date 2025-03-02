@@ -44,6 +44,10 @@ public final class Loan {
                                     int months,
                                     InterestRateScenario scenario,
                                     CalculationType calculationType) {
+        if (birthDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("A data de nascimento não pode ser futura.");
+        }
+
         // Obtém a taxa base com base na idade
         BigDecimal baseAnnualRate = InterestRateRuleProvider.getInterestRate(birthDate);
 

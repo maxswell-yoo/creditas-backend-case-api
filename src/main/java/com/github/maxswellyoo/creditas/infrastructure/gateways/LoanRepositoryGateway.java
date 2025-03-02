@@ -17,8 +17,14 @@ public class LoanRepositoryGateway implements LoanGateway {
 
     @Override
     public Loan saveSimulatedLoan(Loan simulatedLoan) {
-        LoanEntity loanEntity = loanEntityMapper.toEntity(simulatedLoan);
-        LoanEntity savedLoanEntity = loanRepository.save(loanEntity);
-        return loanEntityMapper.toDomainObject(savedLoanEntity);
+        try {
+            LoanEntity loanEntity = loanEntityMapper.toEntity(simulatedLoan);
+            LoanEntity savedLoanEntity = loanRepository.save(loanEntity);
+            return loanEntityMapper.toDomainObject(savedLoanEntity);
+        } catch (IllegalArgumentException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw new RuntimeException("Erro ao salvar empréstimo" + exception);
+        }
     }
 }

@@ -5,6 +5,9 @@ import com.github.maxswellyoo.creditas.infrastructure.persistence.schema.LoanEnt
 
 public class LoanEntityMapper {
     public LoanEntity toEntity(Loan loanDomainObject) {
+        if (loanDomainObject == null) {
+            throw new IllegalArgumentException("O objeto Loan não pode ser nulo");
+        }
         return new LoanEntity(
                 loanDomainObject.getLoanAmount(),
                 loanDomainObject.getBirthDate(),
@@ -16,6 +19,10 @@ public class LoanEntityMapper {
     }
 
     public Loan toDomainObject(LoanEntity loanEntity) {
+        if (loanEntity == null) {
+            throw new IllegalArgumentException("O objeto LoanEntity não pode ser nulo");
+        }
+
         return new Loan(
           loanEntity.getLoanAmount(),
           loanEntity.getBirthDate(),

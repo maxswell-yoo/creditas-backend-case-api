@@ -10,6 +10,10 @@ public final class InterestRateRuleFactory {
     private InterestRateRuleFactory() {}
 
     public static InterestRateRule getRule(BigDecimal rate, InterestRateScenario scenario) {
+        if (scenario == null) {
+            throw new IllegalArgumentException("Cenário de taxa de juros não pode ser nulo.");
+        }
+
         switch (scenario) {
             case FIXED:
                 return new FixedInterestRateRule(rate);
