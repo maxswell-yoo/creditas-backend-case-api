@@ -12,7 +12,6 @@ import java.math.RoundingMode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("Teste do Cálculo de parcelas fixas")
 class FixedPaymentCalculationStrategyTest {
     private final PaymentCalculationStrategy strategy = new FixedPaymentCalculationStrategy();
 

@@ -100,17 +100,27 @@ class LoanTest {
     @DisplayName("Deve lançar IllegalArgumentException para valor de empréstimo negativo")
     void testSimulateLoanNegativeLoanAmount() {
         BigDecimal negativeLoanAmount = BigDecimal.valueOf(-10000);
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 Loan.simulateLoan(negativeLoanAmount, birthDate, months, scenario, calculationType));
+
+        assertNotNull(exception);
+        assertEquals("O valor do empréstimo não pode ser negativo.", exception.getMessage());
     }
 
     @Test
     @DisplayName("Deve lançar IllegalArgumentException para número de meses inválido (zero ou negativo)")
     void testSimulateLoanInvalidMonths() {
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException ZeroMonthsException = assertThrows(IllegalArgumentException.class, () ->
                 Loan.simulateLoan(loanAmount, birthDate, 0, scenario, calculationType));
-        assertThrows(IllegalArgumentException.class, () ->
+
+        IllegalArgumentException negativeMonthsException = assertThrows(IllegalArgumentException.class, () ->
                 Loan.simulateLoan(loanAmount, birthDate, -12, scenario, calculationType));
+
+        assertNotNull(ZeroMonthsException);
+        assertNotNull(negativeMonthsException);
+        assertEquals("O número de meses deve ser maior que zero.", ZeroMonthsException.getMessage());
+        assertEquals("O número de meses deve ser maior que zero.", negativeMonthsException.getMessage());
+        assertEquals(negativeMonthsException.getMessage(), ZeroMonthsException.getMessage());
     }
 
     @Test
@@ -133,8 +143,10 @@ class LoanTest {
     void testSimulateLoanFutureBirthDate() {
         LocalDate futureBirthDate = LocalDate.now().plusYears(1);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                        Loan.simulateLoan(loanAmount, futureBirthDate, months, scenario, calculationType));
+        IllegalArgumentException invalidDateException = assertThrows(IllegalArgumentException.class, () ->
+                Loan.simulateLoan(loanAmount, futureBirthDate, months, scenario, calculationType));
+        assertNotNull(invalidDateException);
+        assertEquals("A data de nascimento não pode ser futura.", invalidDateException.getMessage());
     }
 
 }

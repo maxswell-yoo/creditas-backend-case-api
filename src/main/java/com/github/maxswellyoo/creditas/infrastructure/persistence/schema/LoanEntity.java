@@ -11,11 +11,17 @@ public class LoanEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(nullable = false)
     private BigDecimal loanAmount;
+    @Column(nullable = false)
     private LocalDate birthDate;
+    @Column(nullable = false)
     private int months;
+    @Column(nullable = false)
     private BigDecimal monthlyInstallment;
+    @Column(nullable = false)
     private BigDecimal totalAmount;
+    @Column(nullable = false)
     private BigDecimal totalInterest;
 
     public LoanEntity(

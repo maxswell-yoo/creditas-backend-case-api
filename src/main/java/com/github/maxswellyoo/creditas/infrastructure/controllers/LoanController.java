@@ -5,6 +5,7 @@ import com.github.maxswellyoo.creditas.domain.entity.Loan;
 import com.github.maxswellyoo.creditas.infrastructure.controllers.dto.SimulateLoanRequest;
 import com.github.maxswellyoo.creditas.infrastructure.controllers.dto.SimulateLoanResponse;
 import com.github.maxswellyoo.creditas.infrastructure.controllers.mapper.LoanDTOMapper;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class LoanController {
     }
 
     @PostMapping
-    public ResponseEntity<SimulateLoanResponse> simulateLoan(@RequestBody SimulateLoanRequest request) {
+    public ResponseEntity<SimulateLoanResponse> simulateLoan(@RequestBody @Valid SimulateLoanRequest request) {
         Loan simulatedLoan = simulateLoanUseCase.simulateLoan(request.loanAmount(), request.birthDate(), request.months());
         SimulateLoanResponse loanResponse = loanDTOMapper.toResponse(simulatedLoan);
         return new ResponseEntity<SimulateLoanResponse>(loanResponse, HttpStatus.CREATED);
