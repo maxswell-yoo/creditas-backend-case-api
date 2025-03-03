@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.github.maxswellyoo.creditas.domain.rules.InterestRateRuleProvider;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Period;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +47,10 @@ class InterestRateRuleProviderTest {
     @DisplayName("Deve lançar IllegalStateException para data de nascimento futura")
     void testGetInterestRateForFutureBirthDate() {
         LocalDate futureBirthDate = LocalDate.now().plusYears(1);
-        assertThrows(IllegalStateException.class, () -> InterestRateRuleProvider.getInterestRate(futureBirthDate));
+        int age = Period.between(futureBirthDate, LocalDate.now()).getYears();
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+                InterestRateRuleProvider.getInterestRate(futureBirthDate));
+        assertEquals("Nenhuma regra encontrada para a idade: " + age, exception.getMessage());
     }
 }
