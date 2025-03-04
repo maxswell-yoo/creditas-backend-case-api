@@ -6,7 +6,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class InterestRateRuleProvider {
+public final class BaseInterestRateProvider {
     private static final List<InterestRateRuleEntry> RULES = new ArrayList<>();
 
     static {
@@ -16,9 +16,9 @@ public final class InterestRateRuleProvider {
         RULES.add(new InterestRateRuleEntry(61, Integer.MAX_VALUE, BigDecimal.valueOf(0.04)));
     }
 
-    private InterestRateRuleProvider() {}
+    private BaseInterestRateProvider() {}
 
-    public static BigDecimal getInterestRate(LocalDate birthDate) {
+    public static BigDecimal getBaseInterestRate(LocalDate birthDate) {
         int age = Period.between(birthDate, LocalDate.now()).getYears();
         return RULES.stream()
                 .filter(rule -> rule.applies(age))

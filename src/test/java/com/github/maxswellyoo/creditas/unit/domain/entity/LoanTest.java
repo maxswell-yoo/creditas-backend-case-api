@@ -6,7 +6,7 @@ import com.github.maxswellyoo.creditas.domain.enums.InterestRateScenario;
 import com.github.maxswellyoo.creditas.domain.factory.InterestRateRuleFactory;
 import com.github.maxswellyoo.creditas.domain.factory.PaymentCalculationStrategyFactory;
 import com.github.maxswellyoo.creditas.domain.rules.InterestRateRule;
-import com.github.maxswellyoo.creditas.domain.rules.InterestRateRuleProvider;
+import com.github.maxswellyoo.creditas.domain.rules.BaseInterestRateProvider;
 import com.github.maxswellyoo.creditas.domain.strategy.PaymentCalculationStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,13 +59,13 @@ class LoanTest {
     @Test
     @DisplayName("Deve invocar os métodos internos de simulação corretamente")
     void testSimulateLoanInternalCalls() {
-        try (MockedStatic<InterestRateRuleProvider> ruleProviderMock = mockStatic(InterestRateRuleProvider.class);
+        try (MockedStatic<BaseInterestRateProvider> ruleProviderMock = mockStatic(BaseInterestRateProvider.class);
              MockedStatic<InterestRateRuleFactory> ruleFactoryMock = mockStatic(InterestRateRuleFactory.class);
              MockedStatic<PaymentCalculationStrategyFactory> strategyFactoryMock = mockStatic(PaymentCalculationStrategyFactory.class);
              MockedStatic<Loan> loanStaticMock = mockStatic(Loan.class)) {
 
             // Configura os mocks dos métodos estáticos
-            ruleProviderMock.when(() -> InterestRateRuleProvider.getInterestRate(birthDate))
+            ruleProviderMock.when(() -> BaseInterestRateProvider.getBaseInterestRate(birthDate))
                     .thenReturn(dummyBaseRate);
             ruleFactoryMock.when(() -> InterestRateRuleFactory.getRule(dummyBaseRate, scenario))
                     .thenReturn(dummyRule);
@@ -86,7 +86,7 @@ class LoanTest {
             verify(dummyStrategy, times(1)).calculateMonthlyPayment(loanAmount, dummyRule, months);
 
             ruleProviderMock.verify(() ->
-                    InterestRateRuleProvider.getInterestRate(birthDate), times(1));
+                    BaseInterestRateProvider.getBaseInterestRate(birthDate), times(1));
             ruleFactoryMock.verify(() ->
                     InterestRateRuleFactory.getRule(dummyBaseRate, scenario), times(1));
             strategyFactoryMock.verify(() ->

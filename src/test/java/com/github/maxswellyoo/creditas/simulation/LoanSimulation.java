@@ -2,12 +2,12 @@ package com.github.maxswellyoo.creditas.simulation;
 
 import com.github.maxswellyoo.creditas.simulation.config.HttpConfig;
 import com.github.maxswellyoo.creditas.simulation.scenarios.LoanScenarios;
-import io.gatling.javaapi.core.OpenInjectionStep;
 import io.gatling.javaapi.core.Simulation;
 
 import java.time.Duration;
 
-import static io.gatling.javaapi.core.CoreDsl.*;
+import static io.gatling.javaapi.core.CoreDsl.constantUsersPerSec;
+import static io.gatling.javaapi.core.CoreDsl.rampUsersPerSec;
 import static io.gatling.javaapi.core.OpenInjectionStep.nothingFor;
 
 public class LoanSimulation extends Simulation {

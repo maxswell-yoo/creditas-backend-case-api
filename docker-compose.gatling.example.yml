@@ -13,7 +13,7 @@ services:
     command: >
       /bin/sh -c "mvn gatling:test"
     environment:
-      - URL_SIMULATION=http://case-creditas-api:${DOCKER_CONTAINER_INTERNAL_PORT}
+      - URL_SIMULATION=http://case-creditas-api:${DOCKER_CONTAINER_CREDITAS_API_INTERNAL_PORT}
 networks:
   proxy:
     external: true

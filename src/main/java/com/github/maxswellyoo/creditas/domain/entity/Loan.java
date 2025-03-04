@@ -5,7 +5,7 @@ import com.github.maxswellyoo.creditas.domain.enums.InterestRateScenario;
 import com.github.maxswellyoo.creditas.domain.factory.InterestRateRuleFactory;
 import com.github.maxswellyoo.creditas.domain.factory.PaymentCalculationStrategyFactory;
 import com.github.maxswellyoo.creditas.domain.rules.InterestRateRule;
-import com.github.maxswellyoo.creditas.domain.rules.InterestRateRuleProvider;
+import com.github.maxswellyoo.creditas.domain.rules.BaseInterestRateProvider;
 import com.github.maxswellyoo.creditas.domain.strategy.PaymentCalculationStrategy;
 
 import java.math.BigDecimal;
@@ -49,7 +49,7 @@ public final class Loan {
         }
 
         // Obtém a taxa base com base na idade
-        BigDecimal baseAnnualRate = InterestRateRuleProvider.getInterestRate(birthDate);
+        BigDecimal baseAnnualRate = BaseInterestRateProvider.getBaseInterestRate(birthDate);
 
         // Cria a regra de juros adequada utilizando a factory (FIXED ou VARIABLE)
         InterestRateRule rule = InterestRateRuleFactory.getRule(baseAnnualRate, scenario);
