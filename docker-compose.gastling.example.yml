@@ -1,0 +1,19 @@
+services:
+  gatling-tests:
+    container_name: gatling-tests
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gatling
+    networks:
+      - proxy
+    volumes:
+      - .:/app
+      - ./gatling-reports:/app/target/gatling
+    command: >
+      /bin/sh -c "mvn gatling:test"
+    environment:
+      - URL_SIMULATION=http://case-creditas-api:${DOCKER_CONTAINER_INTERNAL_PORT}
+networks:
+  proxy:
+    external: true

@@ -26,6 +26,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class LoanTest {
@@ -149,4 +150,18 @@ class LoanTest {
         assertEquals("A data de nascimento não pode ser futura.", invalidDateException.getMessage());
     }
 
+    @Test
+    @DisplayName("Deve executar 100000 chamadas ao método em menos de 1000ms")
+    void shouldExecuteTenThousandCallsToTheMethod() {
+        Long start = System.currentTimeMillis();
+
+        for (int i = 0; i < 100000; i++) {
+            Loan.simulateLoan(loanAmount, birthDate, months, scenario, calculationType);
+        }
+
+        Long end = System.currentTimeMillis();
+        Long timeTaken = end - start;
+        assertNotNull(timeTaken);
+        assertThat(timeTaken).isLessThanOrEqualTo(1000);
+    }
 }

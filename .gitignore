@@ -32,3 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 /docker-compose.yml
+/.env
+/docker-compose.gastling.yml
+/gatling-reports/

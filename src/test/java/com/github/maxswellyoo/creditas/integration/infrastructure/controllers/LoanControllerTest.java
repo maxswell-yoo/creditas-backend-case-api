@@ -68,6 +68,6 @@ class LoanControllerTest {
                         .content(requestJson)
                         .characterEncoding("UTF-8"))
                 .andExpect(status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());;
+                .andDo(MockMvcResultHandlers.print());
     }
 }

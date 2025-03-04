@@ -1,0 +1,19 @@
+services:
+  case-creditas-api:
+    container_name: case-creditas-api
+    image: case-creditas-api
+    mem_limit: 4096m
+    cpus: 4.0
+    networks:
+      proxy:
+        ipv4_address: ${DOCKER_CONTAINER_IP}
+    ports:
+      - "${DOCKER_CONTAINER_EXTERNAL_PORT}:${DOCKER_CONTAINER_INTERNAL_PORT}"
+    environment:
+      - APP_PORT=${APP_PORT}
+      - SERVER_TOMCAT_THREADS_MAX=${SERVER_TOMCAT_THREADS_MAX}
+      - SPRING_PROFILES_ACTIVE=${ACTIVE_PROFILE}
+      - DOCKER_EXPOSE_PORT=${DOCKER_EXPOSE_PORT}
+networks:
+  proxy:
+    external: true
