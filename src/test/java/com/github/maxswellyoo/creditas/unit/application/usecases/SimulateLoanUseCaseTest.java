@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.github.maxswellyoo.creditas.application.gateways.EmailGateway;
 import com.github.maxswellyoo.creditas.application.gateways.LoanGateway;
 import com.github.maxswellyoo.creditas.application.usecases.SimulateLoanUseCase;
 import com.github.maxswellyoo.creditas.domain.entity.Loan;
@@ -29,6 +30,8 @@ import java.time.LocalDate;
 class SimulateLoanUseCaseTest {
     @Mock
     private LoanGateway loanGateway;
+    @Mock
+    private EmailGateway emailGateway;
     @InjectMocks
     private SimulateLoanUseCase simulateLoanUseCase;
 
@@ -36,12 +39,14 @@ class SimulateLoanUseCaseTest {
     private BigDecimal loanAmount;
     private LocalDate birthDate;
     private int months;
+    private String email;
 
     @BeforeEach
     void setUp() {
         loanAmount = BigDecimal.valueOf(4000);
         birthDate = LocalDate.of(1997, 2, 11);
         months = 14;
+        email = "test@gmail.com";
 
         simulatedLoan = new Loan(
                 loanAmount,
@@ -49,7 +54,8 @@ class SimulateLoanUseCaseTest {
                 months,
                 BigDecimal.valueOf(727.25),
                 BigDecimal.valueOf(10188.50),
-                BigDecimal.valueOf(188.50)
+                BigDecimal.valueOf(188.50),
+                email
         );
         when(loanGateway.saveSimulatedLoan(any(Loan.class))).thenReturn(simulatedLoan);
     }
@@ -62,11 +68,12 @@ class SimulateLoanUseCaseTest {
                             loanAmount,
                             birthDate,
                             months,
+                            email,
                             InterestRateScenario.FIXED,
                             CalculationType.FIXED))
                     .thenReturn(simulatedLoan);
 
-            Loan result = simulateLoanUseCase.simulateLoan(loanAmount, birthDate, months);
+            Loan result = simulateLoanUseCase.simulateLoan(loanAmount, birthDate, months, email);
 
             assertNotNull(result);
             assertEquals(simulatedLoan, result);
@@ -75,6 +82,7 @@ class SimulateLoanUseCaseTest {
                     loanAmount,
                     birthDate,
                     months,
+                    email,
                     InterestRateScenario.FIXED,
                     CalculationType.FIXED), times(1));
         }

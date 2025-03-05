@@ -16,6 +16,8 @@ public class LoanEntity {
     @Column(nullable = false)
     private LocalDate birthDate;
     @Column(nullable = false)
+    private String email;
+    @Column(nullable = false)
     private int months;
     @Column(nullable = false)
     private BigDecimal monthlyInstallment;
@@ -28,12 +30,14 @@ public class LoanEntity {
             BigDecimal loanAmount,
             LocalDate birthDate,
             int months,
+            String email,
             BigDecimal monthlyInstallment,
             BigDecimal totalAmount,
             BigDecimal totalInterest) {
         this.loanAmount = loanAmount;
         this.birthDate = birthDate;
         this.months = months;
+        this.email = email;
         this.monthlyInstallment = monthlyInstallment;
         this.totalAmount = totalAmount;
         this.totalInterest = totalInterest;
@@ -41,6 +45,10 @@ public class LoanEntity {
 
     public LoanEntity() {
 
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setId(Long id) {
@@ -69,6 +77,10 @@ public class LoanEntity {
 
     public void setTotalInterest(BigDecimal totalInterest) {
         this.totalInterest = totalInterest;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public Long getId() {

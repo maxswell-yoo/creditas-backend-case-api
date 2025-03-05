@@ -18,15 +18,17 @@ public final class Loan {
     private final BigDecimal monthlyInstallment;
     private final BigDecimal totalAmount;
     private final BigDecimal totalInterest;
+    private final String email;
 
     public Loan(BigDecimal loanAmount, LocalDate birthDate, int months,
-                 BigDecimal monthlyInstallment, BigDecimal totalAmount, BigDecimal totalInterest) {
+                 BigDecimal monthlyInstallment, BigDecimal totalAmount, BigDecimal totalInterest, String email) {
         this.loanAmount = loanAmount;
         this.birthDate = birthDate;
         this.months = months;
         this.monthlyInstallment = monthlyInstallment;
         this.totalAmount = totalAmount;
         this.totalInterest = totalInterest;
+        this.email = email;
     }
 
     /**
@@ -35,6 +37,7 @@ public final class Loan {
      * @param loanAmount       Valor do empréstimo.
      * @param birthDate       Data de nascimento do cliente.
      * @param months          Número total de pagamentos.
+     * @param email           Email do cliente do empréstimo
      * @param scenario        Cenário de taxa de juros (FIXED ou VARIABLE).
      * @param calculationType Tipo de cálculo (por exemplo, "FIXED" ou "DECREASING").
      * @return Instância de Loan com os resultados da simulação.
@@ -42,6 +45,7 @@ public final class Loan {
     public static Loan simulateLoan(BigDecimal loanAmount,
                                     LocalDate birthDate,
                                     int months,
+                                    String email,
                                     InterestRateScenario scenario,
                                     CalculationType calculationType) {
         if (birthDate.isAfter(LocalDate.now())) {
@@ -64,7 +68,11 @@ public final class Loan {
         BigDecimal totalAmount = monthlyPayment.multiply(BigDecimal.valueOf(months));
         BigDecimal totalInterest = totalAmount.subtract(loanAmount);
 
-        return new Loan(loanAmount, birthDate, months, monthlyPayment, totalAmount, totalInterest);
+        return new Loan(loanAmount, birthDate, months, monthlyPayment, totalAmount, totalInterest, email);
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public BigDecimal getLoanAmount() {

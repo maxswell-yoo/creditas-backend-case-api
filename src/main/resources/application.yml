@@ -1,4 +1,15 @@
 spring:
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   application:
     name: creditas
   h2:
@@ -18,5 +29,4 @@ spring:
 server:
   tomcat:
     threads:
-      max: ${SERVER_TOMCAT_THREADS_MAX}
-    accept-count: 100
+      max: ${SERVER_TOMCAT_THREADS_MAX:200}

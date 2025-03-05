@@ -101,7 +101,7 @@ lembrando que o container do gatling depende do container da API.
 Para iniciar apenas o container de teste de carga, execute:
 
   ```bash
-  docker-compose -f docker-compose.gatling.yml up --build
+  docker compose -f docker-compose.gatling.yml up --build
   ```
 - Esse comando constrói a imagem dos testes (usando o Dockerfile ou o target configurado) e inicia o container, 
 que utiliza a variável de ambiente `URL_SIMULATION`

@@ -4,7 +4,7 @@ COPY pom.xml .
 
 RUN mvn dependency:go-offline
 
-FROM base As gatling
+FROM base AS gatling
 WORKDIR /app
 COPY pom.xml .
 COPY src src/
