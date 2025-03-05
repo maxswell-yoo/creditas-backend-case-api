@@ -1,9 +1,10 @@
 spring:
   mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    enabled: ${MAIL_ENABLED:false}
+    host: ${MAIL_HOST:host-fallback}
+    port: ${MAIL_PORT:2525}
+    username: ${MAIL_USERNAME:username-fallback}
+    password: ${MAIL_PASSWORD:password-fallback}
     properties:
       mail:
         smtp:
