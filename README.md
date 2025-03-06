@@ -40,7 +40,7 @@ Siga os passos abaixo:
 - Execute o seguinte comando no terminal para criar uma network chamada `proxy` com a faixa de IP `172.19.0.0/16`:
 
    ```bash
-   docker network create --driver=bridge --subnet 172.19.0.0/16 proxy
+   docker network create --driver=bridge --subnet=172.19.0.0/16 proxy
    ```
 > **Aviso:** Verifique se você já não tem uma network com o mesmo nome ou na mesma faixa de IP
    
