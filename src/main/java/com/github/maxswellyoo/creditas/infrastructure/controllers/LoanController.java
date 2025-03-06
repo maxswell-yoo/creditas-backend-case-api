@@ -26,7 +26,13 @@ public class LoanController {
 
     @PostMapping
     public ResponseEntity<SimulateLoanResponse> simulateLoan(@RequestBody @Valid SimulateLoanRequest request) {
-        Loan simulatedLoan = simulateLoanUseCase.simulateLoan(request.loanAmount(), request.birthDate(), request.months());
+        Loan simulatedLoan = simulateLoanUseCase.simulateLoan(
+                request.loanAmount(),
+                request.birthDate(),
+                request.months(),
+                request.email(),
+                request.currency()
+        );
         SimulateLoanResponse loanResponse = loanDTOMapper.toResponse(simulatedLoan);
         return new ResponseEntity<SimulateLoanResponse>(loanResponse, HttpStatus.CREATED);
     }

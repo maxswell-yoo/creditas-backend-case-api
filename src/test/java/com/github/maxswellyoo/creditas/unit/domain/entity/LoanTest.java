@@ -2,6 +2,7 @@ package com.github.maxswellyoo.creditas.unit.domain.entity;
 
 import com.github.maxswellyoo.creditas.domain.entity.Loan;
 import com.github.maxswellyoo.creditas.domain.enums.CalculationType;
+import com.github.maxswellyoo.creditas.domain.enums.Currency;
 import com.github.maxswellyoo.creditas.domain.enums.InterestRateScenario;
 import com.github.maxswellyoo.creditas.domain.factory.InterestRateRuleFactory;
 import com.github.maxswellyoo.creditas.domain.factory.PaymentCalculationStrategyFactory;
@@ -35,6 +36,8 @@ class LoanTest {
     private int months;
     private InterestRateScenario scenario;
     private CalculationType calculationType;
+    private String email;
+    private Currency currency;
 
     // Valores dummy para mocks
     private BigDecimal dummyBaseRate;
@@ -49,6 +52,8 @@ class LoanTest {
         months = 12;
         scenario = InterestRateScenario.FIXED;
         calculationType = CalculationType.FIXED;
+        email = "test@test.com";
+        currency = Currency.USD;
 
         dummyBaseRate = BigDecimal.valueOf(0.05);
         dummyRule = () -> dummyBaseRate;
@@ -75,9 +80,16 @@ class LoanTest {
                     .thenReturn(dummyMonthlyPayment);
 
 
-            loanStaticMock.when(() -> Loan.simulateLoan(loanAmount, birthDate, months, scenario, calculationType))
-                    .thenCallRealMethod();
-            Loan result = Loan.simulateLoan(loanAmount, birthDate, months, scenario, calculationType);
+            loanStaticMock.when(() -> Loan.simulateLoan(
+                    loanAmount,
+                    birthDate,
+                    months,
+                    email,
+                    scenario,
+                    calculationType,
+                    currency)
+            ).thenCallRealMethod();
+            Loan result = Loan.simulateLoan(loanAmount, birthDate, months, email, scenario, calculationType, currency);
 
             assertNotNull(result);
             assertEquals(dummyMonthlyPayment, result.getMonthlyInstallment());
@@ -91,9 +103,15 @@ class LoanTest {
                     InterestRateRuleFactory.getRule(dummyBaseRate, scenario), times(1));
             strategyFactoryMock.verify(() ->
                     PaymentCalculationStrategyFactory.getStrategy(calculationType), times(1));
-            loanStaticMock.verify(() ->
-                            Loan.simulateLoan(loanAmount, birthDate, months, scenario, calculationType),
-                    times(1));
+            loanStaticMock.verify(() -> Loan.simulateLoan(
+                            loanAmount,
+                            birthDate,
+                            months,
+                            email,
+                            scenario,
+                            calculationType,
+                            currency), times(1)
+            );
         }
     }
 
@@ -102,7 +120,7 @@ class LoanTest {
     void testSimulateLoanNegativeLoanAmount() {
         BigDecimal negativeLoanAmount = BigDecimal.valueOf(-10000);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                Loan.simulateLoan(negativeLoanAmount, birthDate, months, scenario, calculationType));
+                Loan.simulateLoan(negativeLoanAmount, birthDate, months, email, scenario, calculationType, currency));
 
         assertNotNull(exception);
         assertEquals("O valor do empréstimo não pode ser negativo.", exception.getMessage());
@@ -112,10 +130,10 @@ class LoanTest {
     @DisplayName("Deve lançar IllegalArgumentException para número de meses inválido (zero ou negativo)")
     void testSimulateLoanInvalidMonths() {
         IllegalArgumentException ZeroMonthsException = assertThrows(IllegalArgumentException.class, () ->
-                Loan.simulateLoan(loanAmount, birthDate, 0, scenario, calculationType));
+                Loan.simulateLoan(loanAmount, birthDate, 0, email, scenario, calculationType, currency));
 
         IllegalArgumentException negativeMonthsException = assertThrows(IllegalArgumentException.class, () ->
-                Loan.simulateLoan(loanAmount, birthDate, -12, scenario, calculationType));
+                Loan.simulateLoan(loanAmount, birthDate, -12, email, scenario, calculationType, currency));
 
         assertNotNull(ZeroMonthsException);
         assertNotNull(negativeMonthsException);
@@ -127,7 +145,7 @@ class LoanTest {
     @Test
     @DisplayName("Deve simular um empréstimo corretamente e calcular os valores exatos")
     void testSimulateLoanIntegration() {
-        Loan result = Loan.simulateLoan(loanAmount, birthDate, months, scenario, calculationType);
+        Loan result = Loan.simulateLoan(loanAmount, birthDate, months, email, scenario, calculationType, currency);
 
         BigDecimal expectedMonthlyInstallment = BigDecimal.valueOf(856.07);
         BigDecimal expectedTotalAmount = expectedMonthlyInstallment.multiply(BigDecimal.valueOf(months));
@@ -145,7 +163,7 @@ class LoanTest {
         LocalDate futureBirthDate = LocalDate.now().plusYears(1);
 
         IllegalArgumentException invalidDateException = assertThrows(IllegalArgumentException.class, () ->
-                Loan.simulateLoan(loanAmount, futureBirthDate, months, scenario, calculationType));
+                Loan.simulateLoan(loanAmount, futureBirthDate, months, email, scenario, calculationType, currency));
         assertNotNull(invalidDateException);
         assertEquals("A data de nascimento não pode ser futura.", invalidDateException.getMessage());
     }
@@ -156,7 +174,7 @@ class LoanTest {
         Long start = System.currentTimeMillis();
 
         for (int i = 0; i < 100000; i++) {
-            Loan.simulateLoan(loanAmount, birthDate, months, scenario, calculationType);
+            Loan.simulateLoan(loanAmount, birthDate, months, email, scenario, calculationType, currency);
         }
 
         Long end = System.currentTimeMillis();

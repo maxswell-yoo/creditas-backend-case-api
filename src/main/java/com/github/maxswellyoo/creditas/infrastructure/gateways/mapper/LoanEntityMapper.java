@@ -12,9 +12,11 @@ public class LoanEntityMapper {
                 loanDomainObject.getLoanAmount(),
                 loanDomainObject.getBirthDate(),
                 loanDomainObject.getMonths(),
+                loanDomainObject.getEmail(),
                 loanDomainObject.getMonthlyInstallment(),
                 loanDomainObject.getTotalAmount(),
-                loanDomainObject.getTotalInterest()
+                loanDomainObject.getTotalInterest(),
+                loanDomainObject.getCurrency()
         );
     }
 
@@ -24,12 +26,14 @@ public class LoanEntityMapper {
         }
 
         return new Loan(
-          loanEntity.getLoanAmount(),
-          loanEntity.getBirthDate(),
-          loanEntity.getMonths(),
-          loanEntity.getMonthlyInstallment(),
-          loanEntity.getTotalAmount(),
-          loanEntity.getTotalInterest()
+                loanEntity.getLoanAmount(),
+                loanEntity.getBirthDate(),
+                loanEntity.getMonths(),
+                loanEntity.getMonthlyInstallment(),
+                loanEntity.getTotalAmount(),
+                loanEntity.getTotalInterest(),
+                loanEntity.getEmail(),
+                loanEntity.getCurrency()
         );
     }
 }
