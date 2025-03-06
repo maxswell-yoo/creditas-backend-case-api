@@ -145,10 +145,11 @@ que utiliza a variável de ambiente `URL_SIMULATION` para se conectar à API.
 
 ```json
 {
-  "totalAmount": 10272.84,
-  "monthlyInstallment": 856.07,
+  "loanAmount": 10000,
+  "birthDate": "11/02/2004",
   "months": 12,
-  "totalInterest": 272.84
+  "email": "cliente@exemplo.com",
+  "currency": "BRL"
 }
 ```
 Exemplo de cURL:
