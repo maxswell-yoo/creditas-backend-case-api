@@ -120,6 +120,12 @@ Para iniciar apenas o container de teste de carga, execute:
 - Esse comando constrói a imagem dos testes (usando o Dockerfile e o target configurado) e inicia o container, 
 que utiliza a variável de ambiente `URL_SIMULATION` para se conectar à API.
 - > **Observação:** ao executar o container do gatling os testes de carga já se iniciam, e ao finalizar os testes o container é finalizado.
+>**Aviso:** Se estiver usando linux ou qualquer sub-system, e deseja ver os logs dos testes de carga, então será necessário executar o seguinte comando:
+
+- ```bash
+  sudo chown -R $(whoami):$(whoami) ./gatling-reports
+  ```
+
 ---
 - > **Aviso:** Após subir os containers, verifique se eles estão em execução e se a API está acessível:
 
