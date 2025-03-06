@@ -116,10 +116,10 @@ Para iniciar apenas o container de teste de carga, execute:
   ```bash
   docker compose -f docker-compose.gatling.yml up --build
   ```
-- Esse comando constrói a imagem dos testes (usando o Dockerfile ou o target configurado) e inicia o container, 
-que utiliza a variável de ambiente `URL_SIMULATION`
-para se conectar à API.
-
+- Esse comando constrói a imagem dos testes (usando o Dockerfile e o target configurado) e inicia o container, 
+que utiliza a variável de ambiente `URL_SIMULATION` para se conectar à API.
+- > **Observação:** ao executar o container do gatling os testes de carga já se iniciam, e ao finalizar os testes o container é finalizado.
+---
 - > **Aviso:** Após subir os containers, verifique se eles estão em execução e se a API está acessível:
 
   ```bash
@@ -217,11 +217,11 @@ A camada de domínio contém a essência do negócio. Aqui residem as entidades,
 Dentro dessa camada, utilizamos padrões como:
 
 #### Provider Pattern
-O `BaseInterestRateProvider` é responsável por determinar a taxa de juros base a ser aplicada com base na a data de nascimento do cliente.
+Nesse design pattern, temos o `BaseInterestRateProvider` que é responsável por determinar a taxa de juros base a ser aplicada com base na a data de nascimento do cliente.
 - **Como Funciona:**  
   O provider calcula a idade do cliente a partir da data de nascimento e, com base em faixas etárias definidas, retorna a taxa de juros anual apropriada 
   através do método `getBaseInterestRate`.
-  - > Um cliente com 24 anos pode receber uma taxa de 5% ao ano, enquanto um cliente com 45 anos pode ter uma taxa diferente.
+  - > Um cliente com 24 anos pode receber uma taxa de 5% ao ano, enquanto um cliente com 45 anos tem uma taxa de 2% ao ano.
     - **Exemplo:**
     ```java
      import java.time.LocalDate;
@@ -231,10 +231,10 @@ O `BaseInterestRateProvider` é responsável por determinar a taxa de juros base
     ```
  ---
 
-O `BaseCurrencyConversionRateProvider` é responsável por determinar a taxa de conversão entre duas moedas com base em regras pré-definidas.
+O `BaseCurrencyConversionRateProvider` é outro exemplo, ele é responsável por determinar a taxa de conversão entre duas moedas com base em regras pré-definidas.
 - **Como Funciona:**  
   Esse provider mantém uma lista de regras de conversão, onde cada regra associa uma moeda de origem a uma moeda de destino e define uma taxa de conversão fixa. Quando o método `getConversionRate` é chamado, ele verifica qual regra se aplica à conversão solicitada e retorna a taxa correspondente.
-    - > Por exemplo, para converter de USD para BRL, a regra pode definir uma taxa de 5.0; para converter de EUR para BRL, a taxa pode ser 6.0.
+    - > Por exemplo, para converter de USD para BRL, a regra pode definir uma taxa de 5.0. Já para converter de EUR para BRL, a taxa pode ser 6.0.
         - **Exemplo:**
       ```java
       import com.github.maxswellyoo.creditas.domain.enums.Currency;
@@ -245,7 +245,7 @@ O `BaseCurrencyConversionRateProvider` é responsável por determinar a taxa de 
       ```
 ---
 - **Vantagem:**  
-  Centralizando a lógica de decisão em um único local, o provider garante consistência na aplicação das regras de negócio relacionadas à definição das taxas de juros. Se as faixas etárias ou as taxas precisarem ser alteradas, essa alteração é feita no provider sem que seja necessário modificar outras partes do sistema.
+  Centralizando a lógica de decisão em um único local, o provider garante consistência na aplicação das regras de negócio relacionadas à definição das taxas de juros e conversão de moedas. Se as faixas etárias ou as taxas precisarem ser alteradas, essa alteração é feita no provider sem que seja necessário modificar outras partes do sistema.
 
   
 #### Factory Pattern
@@ -253,20 +253,20 @@ O `BaseCurrencyConversionRateProvider` é responsável por determinar a taxa de 
 As fábricas centralizam a criação dos objetos necessários, encapsulando a lógica de instanciar a implementação correta de acordo com parâmetros dinâmicos. No projeto, temos duas fábricas principais:
 
 - **InterestRateRuleFactory:**  
-  Essa fábrica é responsável por criar a implementação correta da interface `InterestRateRule`. A interface `InterestRateRule` define o contrato para obter a taxa de juros anual, através de um método como `getAnnualRate()`.  
+  Essa fábrica é responsável por criar a implementação correta da interface `InterestRateRule`. A interface `InterestRateRule` define o contrato para obter a taxa de juros anual, através de um método chamado `getAnnualRate()`.  
   Para encapsular as regras de juros concretas, o projeto possui implementações como a **FixedInterestRateRule**:
 
-- > Vale destacar que a definição da taxa anual (`AnnualRate`) depende das implementações da interface `InterestRateRule`. 
-O `InterestRateRuleProvider` obtém uma taxa base com base na idade do cliente, mas é a implementação concreta de `InterestRateRule` – por exemplo, 
+- > Vale destacar que a definição da taxa anual (`AnnualRate`) depende das implementações da interface `InterestRateRule`, ou seja, o `InterestRateRuleProvider` obtém uma taxa base com base na idade do cliente, mas é a implementação concreta de `InterestRateRule` – por exemplo, 
 a `FixedInterestRateRule` – que efetivamente calcula e retorna a taxa aplicada, podendo usar a taxa base inalterada ou ajustá-la conforme as regras de negócio específicas.
 
 - > **FixedInterestRateRule: Implementação concreta de `InterestRateRule`:**  
       Esta implementação retorna uma taxa de juros fixa, ou seja, ela simplesmente retorna a taxa base calculada para o cliente (por exemplo, 5% ao ano para clientes até 25 anos).  
-      Quando o cenário definido for FIXED, o `InterestRateRuleFactory` retorna uma instância de `FixedInterestRateRule`, garantindo que a taxa base seja aplicada sem modificações adicionais.
+      
+ - > Quando o cenário definido for FIXED, o `InterestRateRuleFactory` retorna uma instância de `FixedInterestRateRule`, garantindo que a taxa base seja aplicada sem modificações adicionais.
 
 
   - **Como Funciona `InterestRateRuleFactory`:**  
-    A fábrica recebe a taxa base (obtida a partir do `InterestRateRuleProvider`) e o cenário (FIXED ou VARIABLE). Se o cenário for FIXED, a fábrica cria e retorna uma instância de `FixedInterestRateRule`. Caso o cenário seja VARIABLE, a fábrica poderá retornar outra implementação que aplique ajustes ou fatores adicionais à taxa, conforme as regras do negócio.
+    A fábrica recebe a taxa base (obtida a partir do `InterestRateRuleProvider`) e o cenário (FIXED). Se o cenário for FIXED, a fábrica cria e retorna uma instância de `FixedInterestRateRule`. Caso o cenário seja VARIABLE, a fábrica poderá retornar outra implementação que aplique ajustes ou fatores adicionais à taxa, conforme as regras do negócio.
 
     - Exemplo:
       ```java
@@ -277,7 +277,7 @@ a `FixedInterestRateRule` – que efetivamente calcula e retorna a taxa aplicada
       ```
 ---
 - **Como Funciona `CurrencyConversionStrategyFactory`:**  
-  Essa fábrica centraliza a criação de estratégias para conversão de moedas com base no tipo de conversão desejado. Ao receber um tipo (por exemplo, DEFAULT), a fábrica retorna uma instância concreta da interface `CurrencyConversionStrategy` que define como a conversão deve ser realizada. Por exemplo, se o tipo for DEFAULT, ela retorna uma instância de `DefaultCurrencyConversionStrategy`, que converte o valor usando a taxa fornecida sem aplicar ajustes adicionais. Caso novos tipos de conversão sejam necessários, basta registrar novas implementações na fábrica, mantendo o restante do sistema desacoplado das particularidades da conversão.
+  Outra fábrica do projeto é a `CurrencyConversionStrategyFactory`, Essa fábrica centraliza a criação de estratégias para conversão de moedas com base no tipo de conversão desejado. Ao receber um tipo (por exemplo, DEFAULT), a fábrica retorna uma instância concreta da interface `CurrencyConversionStrategy` que define como a conversão deve ser realizada. Por exemplo, se o tipo for DEFAULT, ela retorna uma instância de `DefaultCurrencyConversionStrategy`, que converte o valor usando a taxa fornecida sem aplicar ajustes adicionais. Caso novos tipos de conversão sejam necessários, basta registrar novas implementações na fábrica, mantendo o restante do sistema desacoplado das particularidades da conversão.
 
     - **Exemplo:**
       ```java
@@ -291,8 +291,8 @@ a `FixedInterestRateRule` – que efetivamente calcula e retorna a taxa aplicada
 ---
 
 - **PaymentCalculationStrategyFactory:**  
-  Essa fábrica é responsável por selecionar e instanciar a estratégia de cálculo de parcelas correta com base no tipo de cálculo desejado (por exemplo, FIXED ou DECREASING).
-  - > Para o cálculo fixo, ela retornará uma instância de `FixedPaymentCalculationStrategy`. Caso haja outra estratégia (como um cálculo de amortização decrescente), a fábrica poderá retornar a implementação correspondente, sem que o caso de uso precise ser alterado.
+  Essa fábrica é responsável por selecionar e instanciar a estratégia de cálculo de parcelas correta com base no tipo de cálculo desejado (por exemplo, FIXED).
+  - > Para o cálculo fixo, ela retornará uma instância de `FixedPaymentCalculationStrategy`. Caso haja outra estratégia (como um cálculo de amortização decrescente), a fábrica poderá retornar a implementação correspondente.
     - **Exemplo**:
     ```java
     import com.github.maxswellyoo.creditas.domain.enums.CalculationType;
@@ -309,7 +309,7 @@ a `FixedInterestRateRule` – que efetivamente calcula e retorna a taxa aplicada
 ---
 
 #### Strategy Pattern
-A interface `PaymentCalculationStrategy` define um contrato para o cálculo das parcelas mensais de um empréstimo. Essa interface possibilita a implementação de diferentes algoritmos de cálculo sem que o código que os utiliza precise conhecer os detalhes da lógica. Por exemplo:
+Nesse design pattern, temos de exemplo a interface `PaymentCalculationStrategy` que define um contrato para o cálculo das parcelas mensais de um empréstimo. Essa interface possibilita a implementação de diferentes algoritmos de cálculo sem que o código que os utiliza precise conhecer os detalhes da lógica. Por exemplo:
 
 
 - **FixedPaymentCalculationStrategy:**  
@@ -328,7 +328,7 @@ A interface `PaymentCalculationStrategy` define um contrato para o cálculo das 
 
 ---
 - **DefaultCurrencyConversionStrategy:**  
-  A interface `CurrencyConversionStrategy` define um contrato para converter um valor de uma moeda para outra utilizando uma taxa de conversão, permitindo a implementação de diferentes algoritmos sem que o código consumidor precise conhecer os detalhes internos.
+  Outro exemplo, é a interface `CurrencyConversionStrategy` que define um contrato para converter um valor de uma moeda para outra utilizando uma taxa de conversão, permitindo a implementação de diferentes algoritmos sem que o código consumidor precise conhecer os detalhes internos.
 
   > Na implementação padrão, a classe `DefaultCurrencyConversionStrategy` realiza a validação dos valores de entrada para garantir que nem o valor a ser convertido nem a taxa de conversão sejam negativos, e em seguida multiplica o valor pela taxa de conversão para obter o resultado final. Caso os parâmetros sejam inválidos, uma `IllegalArgumentException` é lançada, evitando cálculos incorretos.
     - **Exemplo:**
@@ -339,7 +339,7 @@ A interface `PaymentCalculationStrategy` define um contrato para o cálculo das 
       // Converte 100 unidades de uma moeda para outra utilizando uma taxa de conversão de 5.0
       BigDecimal convertedAmount = conversionStrategy.convert(BigDecimal.valueOf(100), BigDecimal.valueOf(5.0));
       
-      // Resultado esperado: 100 * 5.0 = 500
+      // Resultado esperado: 100 * 5.0 = 500.0
       ```
 - **Vantagem:**  
   Essa implementação garante que o processo de conversão seja realizado de forma consistente e segura, permitindo que o algoritmo de conversão seja alterado ou estendido sem impactar o restante do sistema.
@@ -350,7 +350,7 @@ A interface `PaymentCalculationStrategy` define um contrato para o cálculo das 
 ---
 ### Serviço de Conversão de Moedas e Fluxo da Conversão
 
- Utilizando os padrões acima, temos o serviço `CurrencyConversionService` que é responsável por converter um valor de uma moeda para outra, utilizando regras e estratégias definidas na camada de domínio. O fluxo de conversão ocorre da seguinte forma:
+ Utilizando os padrões acima, temos o serviço `CurrencyConversionService` que é responsável por gerenciar o fluxo de conversão um valor de uma moeda para outra, utilizando regras e estratégias definidas. O fluxo de conversão ocorre da seguinte forma:
 
 - Primeiro, o método verifica se a moeda de origem e a moeda alvo são iguais. Se forem, ele retorna o valor original sem realizar conversão.
   - **Exemplo:**
@@ -384,7 +384,7 @@ valor total a ser pago, juros totais e moeda .
 
 #### Fluxo da Simulação
 
-O método estático `simulateLoan` é um **factory method** que centraliza toda a lógica de simulação do empréstimo, seguindo estes passos:
+ O fluxo começa com o método estático `simulateLoan` que é um **factory method** que centraliza toda a lógica de simulação do empréstimo, seguindo estes passos:
 
 1. **Validação Inicial:**  
    O método começa verificando se a data de nascimento (`birthDate`) não está no futuro. Caso esteja, é lançada uma exceção, garantindo que apenas dados válidos sejam processados.
@@ -404,7 +404,7 @@ O método estático `simulateLoan` é um **factory method** que centraliza toda 
      BigDecimal baseAnnualRate = BaseInterestRateProvider.getBaseInterestRate(LocalDate.of(2004, 2, 11));
     ```
 3. **Seleção da Regra de Juros:**  
-   Utilizando a taxa base e o parâmetro `scenario` (por exemplo, FIXED ou VARIABLE), o método chama a fábrica `InterestRateRuleFactory.getRule(...)`.
+   Utilizando a taxa base e o parâmetro `scenario` (por exemplo, FIXED), o método chama a fábrica `InterestRateRuleFactory.getRule(...)`.
   - **Interface InterestRateRule:** Define o contrato para retornar a taxa anual de juros.
   - **FixedInterestRateRule:** Uma implementação típica que, no cenário FIXED, retorna a taxa base sem alterações adicionais.  
     Essa etapa garante que a lógica de ajuste ou modificação da taxa esteja encapsulada na regra apropriada, conforme as necessidades do negócio.
@@ -416,7 +416,7 @@ O método estático `simulateLoan` é um **factory method** que centraliza toda 
       InterestRateRule rule = InterestRateRuleFactory.getRule(baseAnnualRate, InterestRateScenario.FIXED);
       ```
 4. **Seleção da Estratégia de Cálculo:**  
-   Com o parâmetro `calculationType` (por exemplo, FIXED ou DECREASING), o método chama a fábrica `PaymentCalculationStrategyFactory.getStrategy(...)`, que retorna uma implementação de:
+   Com o parâmetro `calculationType` (por exemplo, FIXED), o método chama a fábrica `PaymentCalculationStrategyFactory.getStrategy(...)`, que retorna uma implementação de:
   - **PaymentCalculationStrategy:** Uma interface que define o método para calcular a parcela mensal.
  
     - **Exemplo:**
@@ -425,7 +425,7 @@ O método estático `simulateLoan` é um **factory method** que centraliza toda 
     PaymentCalculationStrategy strategy = PaymentCalculationStrategyFactory.getStrategy(CalculationType.FIXED);
     ```
 5. **Cálculo da Parcela Mensal e Totais:**  
-   O método chama `strategy.calculateMonthlyPayment(loanAmount, rule, months)` para calcular a parcela mensal com base no valor do empréstimo, na regra de juros e no número de parcelas.  
+   logo em seguida, o método chama `strategy.calculateMonthlyPayment(loanAmount, rule, months)` para calcular a parcela mensal com base no valor do empréstimo, na regra de juros e no número de parcelas.  
    Em seguida, multiplica a parcela mensal pelo número de meses para determinar o valor total a ser pago e calcula os juros totais como a diferença entre o total pago e o valor inicial do empréstimo.
    - **Exemplo:**
      ```java
@@ -447,7 +447,7 @@ Essa abordagem centraliza toda a lógica de simulação do empréstimo, tornando
 
 ## Camada de Aplicação
 
-A camada de aplicação atua como intermediária entre a interface do usuário e o domínio, coordenando o fluxo de trabalho para simular um empréstimo e disparar notificações. No caso de uso `SimulateLoanUseCase`, a aplicação realiza as seguintes operações:
+A camada de aplicação atua como intermediária entre a interface do usuário e o domínio, coordenando o fluxo de trabalho para simular um empréstimo e disparar notificações. Exemplo disso, é o caso de uso `SimulateLoanUseCase`, que realiza as seguintes operações:
 
 - Recebe os dados de entrada: valor do empréstimo, data de nascimento, número de parcelas, e-mail do cliente e a moeda em que o valor foi informado.
 - Converte o valor do empréstimo para a moeda base (BRL) utilizando o serviço de conversão de moedas, garantindo que os cálculos financeiros sejam realizados de forma consistente.
@@ -462,7 +462,7 @@ A camada de aplicação atua como intermediária entre a interface do usuário e
 
 ## Camada de Infraestrutura
 
-Nesta camada, conectamos o nosso domínio às tecnologias externas – basicamente, fazemos a “ponte” entre o que o negócio precisa e como os dados são persistidos e expostos. Vou explicar como cada parte foi pensada:
+Nesta camada, conectamos o nosso domínio às tecnologias externas – basicamente, fazemos a “ponte” entre o que o negócio precisa, além de definir como os dados são persistidos e expostos. Vou explicar como cada parte foi pensada:
 
 ### Controllers
 O **LoanController** é o ponto de entrada da nossa API. Ele recebe as requisições HTTP (no endpoint `POST /simulate-loan`), valida os dados de entrada (através do DTO `SimulateLoanRequest` com as anotações de validação) e encaminha as informações para o caso de uso `SimulateLoanUseCase`. Depois, converte o resultado (um objeto `Loan`) em um DTO de resposta (`SimulateLoanResponse`) usando o `LoanDTOMapper`. Essa abordagem deixa o controller focado apenas em lidar com a comunicação HTTP, sem misturar a lógica de negócio.
@@ -491,7 +491,7 @@ Dessa forma, o envio de e-mail fica desacoplado da lógica de persistência e do
 ### Persistência
 Na camada de persistência, temos:
 - **LoanRepository:** uma interface que estende `JpaRepository`, responsável por oferecer operações CRUD para a entidade `LoanEntity`.
-- **LoanEntity:** a classe mapeada para a tabela `LOAN`. Ela define todos os campos necessários (valor do empréstimo, data de nascimento, número de parcelas, parcela mensal, total pago e juros) e garante, através das anotações JPA, que os dados essenciais não sejam nulos.
+- **LoanEntity:** a classe mapeada para a tabela `LOAN`. Ela define todos os campos necessários (valor do empréstimo, data de nascimento, número de parcelas, parcela mensal, total pago, juros e moeda) e garante, através das anotações JPA, que os dados essenciais não sejam nulos.
 
 ### Fluxo Geral da Simulação com Conversão de Moedas e Notificação por E-mail
 
@@ -552,7 +552,7 @@ Os testes unitários foram desenvolvidos para validar a funcionalidade isolada d
 
 
 - **Aplicação:**  
-  Aqui é testado como o `SimulateLoanUseCase` para confirmar que ele orquestra corretamente todo o fluxo da simulação do empréstimo. Isso inclui a conversão do valor informado para a moeda base, a invocação do método estático do domínio para calcular os valores financeiros, a delegação para a persistência via `LoanGateway` e o disparo da notificação por e-mail via `EmailGateway`. Dessa forma, o teste garante que o fluxo de dados – desde a entrada até a persistência – está funcionando corretamente.
+  Aqui é testado o `SimulateLoanUseCase` para confirmar que ele orquestra corretamente todo o fluxo da simulação do empréstimo. Isso inclui a conversão do valor informado para a moeda base, a invocação do método estático do domínio para calcular os valores financeiros, a delegação para a persistência via `LoanGateway` e o disparo da notificação por e-mail via `EmailGateway`. Dessa forma, o teste garante que o fluxo de dados – desde a entrada até a persistência – está funcionando corretamente.
 
 
 - **Infraestrutura:**
@@ -569,7 +569,7 @@ Os testes de integração garantem que os diferentes componentes do sistema se c
   São testados usando um banco de dados em memória (H2). Os testes verificam se o `LoanRepository` realiza corretamente a operação de salvar.
 
 - **Controllers:**  
-  Testes de integração com MockMvc simulam requisições HTTP para os endpoints (como o `POST /simulate-loan`), verificando todo o fluxo – desde a validação dos dados de entrada e a execução do caso de uso até a transformação em DTO e a resposta final ao cliente. Esses testes asseguram que a API esteja respondendo com o status e os dados corretos.
+  Testes de integração com MockMvc simulam requisições HTTP para o endpoint (como o `POST /simulate-loan`), verificando todo o fluxo – desde a validação dos dados de entrada e a execução do caso de uso até a transformação em DTO e a resposta final ao cliente. Esses testes asseguram que a API esteja respondendo com o status e os dados corretos.
 
 --- 
 ### Testes de Desempenho (Gatling)
