@@ -1,6 +1,14 @@
 package com.github.maxswellyoo.creditas.infrastructure.persistence.schema;
 
-import jakarta.persistence.*;
+import com.github.maxswellyoo.creditas.domain.enums.Currency;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,6 +33,9 @@ public class LoanEntity {
     private BigDecimal totalAmount;
     @Column(nullable = false)
     private BigDecimal totalInterest;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Currency currency;
 
     public LoanEntity(
             BigDecimal loanAmount,
@@ -33,7 +44,8 @@ public class LoanEntity {
             String email,
             BigDecimal monthlyInstallment,
             BigDecimal totalAmount,
-            BigDecimal totalInterest) {
+            BigDecimal totalInterest,
+            Currency currency) {
         this.loanAmount = loanAmount;
         this.birthDate = birthDate;
         this.months = months;
@@ -41,10 +53,13 @@ public class LoanEntity {
         this.monthlyInstallment = monthlyInstallment;
         this.totalAmount = totalAmount;
         this.totalInterest = totalInterest;
+        this.currency = currency;
     }
 
-    public LoanEntity() {
+    public LoanEntity() {}
 
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
     public void setEmail(String email) {
@@ -81,6 +96,10 @@ public class LoanEntity {
 
     public String getEmail() {
         return email;
+    }
+
+    public Currency getCurrency() {
+        return currency;
     }
 
     public Long getId() {

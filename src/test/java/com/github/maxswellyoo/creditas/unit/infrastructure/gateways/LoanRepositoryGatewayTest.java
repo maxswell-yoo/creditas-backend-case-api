@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import static com.github.maxswellyoo.creditas.domain.enums.Currency.USD;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -60,7 +61,8 @@ public class LoanRepositoryGatewayTest {
                 BigDecimal.valueOf(856.07),
                 BigDecimal.valueOf(10272.84),
                 BigDecimal.valueOf(272.84),
-                email
+                email,
+                USD
         );
     }
 

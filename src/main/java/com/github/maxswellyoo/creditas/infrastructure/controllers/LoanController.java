@@ -30,7 +30,8 @@ public class LoanController {
                 request.loanAmount(),
                 request.birthDate(),
                 request.months(),
-                request.email()
+                request.email(),
+                request.currency()
         );
         SimulateLoanResponse loanResponse = loanDTOMapper.toResponse(simulatedLoan);
         return new ResponseEntity<SimulateLoanResponse>(loanResponse, HttpStatus.CREATED);

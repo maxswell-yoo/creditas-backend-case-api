@@ -1,6 +1,7 @@
 package com.github.maxswellyoo.creditas.infrastructure.controllers.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.github.maxswellyoo.creditas.domain.enums.Currency;
 import jakarta.validation.constraints.*;
 
 import java.io.Serializable;
@@ -20,5 +21,7 @@ public record SimulateLoanRequest(
         Integer months,
         @Email(message = "o campo deve ter o formato de e-mail")
         @NotBlank(message = "o campo não pode ser vazio")
-        String email
+        String email,
+        @NotNull(message = "o campo currency não pode ser vazio")
+        Currency currency
 ) implements Serializable { }

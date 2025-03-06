@@ -1,17 +1,13 @@
 package com.github.maxswellyoo.creditas.integration.infrastructure.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.maxswellyoo.creditas.application.gateways.EmailGateway;
 import com.github.maxswellyoo.creditas.infrastructure.controllers.dto.SimulateLoanRequest;
 import com.github.maxswellyoo.creditas.integration.config.TestEmailGatewayConfig;
 import com.github.maxswellyoo.creditas.integration.config.TestMailConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -23,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import static com.github.maxswellyoo.creditas.domain.enums.Currency.USD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,7 +44,8 @@ class LoanControllerTest {
                 BigDecimal.valueOf(10000),
                 LocalDate.of(2004, 2, 11),
                 12,
-                "test@test.com"
+                "test@test.com",
+                USD
         );
     }
 
@@ -71,7 +69,8 @@ class LoanControllerTest {
                 BigDecimal.valueOf(-10000),
                 LocalDate.now().plusYears(1),
                 0,
-                "teste"
+                "teste",
+                USD
         );
         String requestJson = objectMapper.writeValueAsString(invalidRequest);
 
@@ -81,6 +80,5 @@ class LoanControllerTest {
                         .characterEncoding("UTF-8"))
                 .andExpect(status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print());
-
     }
 }

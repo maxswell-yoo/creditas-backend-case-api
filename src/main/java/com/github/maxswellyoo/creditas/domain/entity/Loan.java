@@ -1,11 +1,12 @@
 package com.github.maxswellyoo.creditas.domain.entity;
 
 import com.github.maxswellyoo.creditas.domain.enums.CalculationType;
+import com.github.maxswellyoo.creditas.domain.enums.Currency;
 import com.github.maxswellyoo.creditas.domain.enums.InterestRateScenario;
 import com.github.maxswellyoo.creditas.domain.factory.InterestRateRuleFactory;
 import com.github.maxswellyoo.creditas.domain.factory.PaymentCalculationStrategyFactory;
-import com.github.maxswellyoo.creditas.domain.rules.InterestRateRule;
 import com.github.maxswellyoo.creditas.domain.rules.BaseInterestRateProvider;
+import com.github.maxswellyoo.creditas.domain.rules.InterestRateRule;
 import com.github.maxswellyoo.creditas.domain.strategy.PaymentCalculationStrategy;
 
 import java.math.BigDecimal;
@@ -19,9 +20,16 @@ public final class Loan {
     private final BigDecimal totalAmount;
     private final BigDecimal totalInterest;
     private final String email;
+    private final Currency currency;
 
-    public Loan(BigDecimal loanAmount, LocalDate birthDate, int months,
-                 BigDecimal monthlyInstallment, BigDecimal totalAmount, BigDecimal totalInterest, String email) {
+    public Loan(BigDecimal loanAmount,
+                LocalDate birthDate,
+                int months,
+                BigDecimal monthlyInstallment,
+                BigDecimal totalAmount,
+                BigDecimal totalInterest,
+                String email,
+                Currency currency) {
         this.loanAmount = loanAmount;
         this.birthDate = birthDate;
         this.months = months;
@@ -29,6 +37,7 @@ public final class Loan {
         this.totalAmount = totalAmount;
         this.totalInterest = totalInterest;
         this.email = email;
+        this.currency = currency;
     }
 
     /**
@@ -40,6 +49,7 @@ public final class Loan {
      * @param email           Email do cliente do empréstimo
      * @param scenario        Cenário de taxa de juros (FIXED ou VARIABLE).
      * @param calculationType Tipo de cálculo (por exemplo, "FIXED" ou "DECREASING").
+     * @param fromCurrency   Tipo de moeda do valor do empréstimo
      * @return Instância de Loan com os resultados da simulação.
      */
     public static Loan simulateLoan(BigDecimal loanAmount,
@@ -47,7 +57,8 @@ public final class Loan {
                                     int months,
                                     String email,
                                     InterestRateScenario scenario,
-                                    CalculationType calculationType) {
+                                    CalculationType calculationType,
+                                    Currency fromCurrency) {
         if (birthDate.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("A data de nascimento não pode ser futura.");
         }
@@ -59,20 +70,24 @@ public final class Loan {
         InterestRateRule rule = InterestRateRuleFactory.getRule(baseAnnualRate, scenario);
 
         // Seleciona a estratégia de cálculo de pagamento utilizando a factory
-        PaymentCalculationStrategy strategy = PaymentCalculationStrategyFactory.getStrategy(calculationType);
+        PaymentCalculationStrategy paymentStrategy = PaymentCalculationStrategyFactory.getStrategy(calculationType);
 
         // Calcula a parcela mensal
-        BigDecimal monthlyPayment = strategy.calculateMonthlyPayment(loanAmount, rule, months);
+        BigDecimal monthlyPayment = paymentStrategy.calculateMonthlyPayment(loanAmount, rule, months);
 
         // Calcula o valor total a ser pago e os juros totais
         BigDecimal totalAmount = monthlyPayment.multiply(BigDecimal.valueOf(months));
         BigDecimal totalInterest = totalAmount.subtract(loanAmount);
 
-        return new Loan(loanAmount, birthDate, months, monthlyPayment, totalAmount, totalInterest, email);
+        return new Loan(loanAmount, birthDate, months, monthlyPayment, totalAmount, totalInterest, email, fromCurrency);
     }
 
     public String getEmail() {
         return email;
+    }
+
+    public Currency getCurrency() {
+        return currency;
     }
 
     public BigDecimal getLoanAmount() {

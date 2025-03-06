@@ -15,7 +15,8 @@ public class LoanEntityMapper {
                 loanDomainObject.getEmail(),
                 loanDomainObject.getMonthlyInstallment(),
                 loanDomainObject.getTotalAmount(),
-                loanDomainObject.getTotalInterest()
+                loanDomainObject.getTotalInterest(),
+                loanDomainObject.getCurrency()
         );
     }
 
@@ -31,7 +32,8 @@ public class LoanEntityMapper {
                 loanEntity.getMonthlyInstallment(),
                 loanEntity.getTotalAmount(),
                 loanEntity.getTotalInterest(),
-                loanEntity.getEmail()
+                loanEntity.getEmail(),
+                loanEntity.getCurrency()
         );
     }
 }
