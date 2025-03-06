@@ -9,7 +9,7 @@ import static io.gatling.javaapi.http.HttpDsl.status;
 
 public class LoanActions {
     public static ChainBuilder simulateLoan() {
-        String requestBody = "{ \"loanAmount\": 10000, \"birthDate\": \"11/02/1997\", \"months\": 12 , \"email\": \"test@gmail.com\" }";
+        String requestBody = "{ \"loanAmount\": 10000, \"birthDate\": \"11/02/1997\", \"months\": 12 , \"email\": \"test@gmail.com\", \"currency\": \"BRL\" }";
 
         return exec(
                 http("Simular Empréstimo")

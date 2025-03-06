@@ -42,13 +42,14 @@ Siga os passos abaixo:
    ```bash
    docker network create --driver=bridge --subnet 172.19.0.0/16 proxy
    ```
-
+> **Aviso:** Verifique se você já não tem uma network com o mesmo nome ou na mesma faixa de IP
+   
 **Configure as variáveis de ambiente:**
 
 - Copie o arquivo de exemplo de ambiente `.env.example` para criar o arquivo de variáveis `.env`:
 
    ```
-    cp env.example .env
+    cp .env.example .env
    ```
 
 - Copie o Docker Compose para a API:
